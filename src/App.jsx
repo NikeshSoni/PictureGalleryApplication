@@ -37,6 +37,9 @@ function App() {
     setQuery(e.target.value);
   };
 
+  console.log(photos);
+
+
   return (
 
     <>
@@ -61,8 +64,11 @@ function App() {
 
         <div className="gallery-grid" >
           {photos.map((image) => (
-            <div key={image.id} className="gallery-item">
+            <div key={image.id} className="gallery-item card">
               <img src={image.urls.small} alt={image.alt_description} />
+              <div className='p-1' style={{fontSize:".7rem"}}>
+                <p>{image.description}</p>
+              </div>
             </div>
           ))}
         </div>
