@@ -1,33 +1,73 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [photos, setPhotos] = useState([]);
+  const [query, setQuery] = useState('Food');
+
+  const API_URL = 'https://api.unsplash.com/search/photos';
+  const ACCESS_KEY = 'JHTcxPKJ-J3Win1NRHKNCMhDyqhjqSOGX8cgU2Q6d14';
+
+  const fetchPhotos = (query) => {
+    axios.get(API_URL, {
+      params: {
+        query: query,
+        per_page: 12
+      },
+      headers: {
+        Authorization: `Client-ID ${ACCESS_KEY}`
+      }
+    })
+      .then(response => {
+        setPhotos(response.data.results);
+      })
+      .catch(error => {
+        console.error('Error fetching data from Unsplash API:', error);
+      });
+  };
+
+  useEffect(() => {
+    fetchPhotos(query === 'Food' ? 'food,landscape' : query);
+  }, [query]);
+
+  const handleSearchChange = (e) => {
+    setQuery(e.target.value);
+  };
 
   return (
+
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div style={{ width: "90%", margin: "0 auto" }}>
+        <div className='row my-4'>
+          <div class="mb-3 col-8 col-md-5">
+            <input type="text" value={query}
+              onChange={handleSearchChange}
+              className="form-control"
+              id="exampleFormControlInput1" placeholder="Search categories like food or landscape" />
+          </div>
+
+          <div className='col-5'>
+            <button type="button"
+              className="btn btn-primary">
+              Search
+            </button>
+          </div>
+        </div>
+
+
+
+        <div className="gallery-grid" >
+          {photos.map((image) => (
+            <div key={image.id} className="gallery-item">
+              <img src={image.urls.small} alt={image.alt_description} />
+            </div>
+          ))}
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
     </>
   )
 }
